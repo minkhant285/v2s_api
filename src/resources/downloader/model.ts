@@ -8,7 +8,7 @@ export interface YtdpTypes {
     uploader_url: string;
     uploader_id: string;
     thumbnail: string;
-    duration: number;
+    duration: string;
     view_count: number;
     like_count: null;
     dislike_count: null;

@@ -5,6 +5,7 @@ import fs from 'fs'
 import path from 'path';
 import { getJSDocReturnType } from 'typescript';
 import { EXT, Format, Thumbnail, YtdpTypes } from './model';
+import { listS3Objects, uploadToS3 } from './s3';
 
 async function removeFolderContents(dir: string) {
     fs.readdir(dir, (err, files) => {
@@ -32,11 +33,16 @@ export class YoutubeVideoDownlad {
         const videoUrl = req.query.url as string || '' as string;
         try {
             const getcoreinfo = await getAllFormat(videoUrl);
-            const parsed = JSON.parse(getcoreinfo || '') as YtdpTypes;
+            const parsed = JSON.parse(getcoreinfo?.info || '') as YtdpTypes;
+            parsed.duration = getcoreinfo?.duration || '';
+
+            // await listS3Objects();
+
             return res.status(200).json({
                 data: {
                     name: parsed._filename,
                     thumbnails: parsed.thumbnails,
+                    duration: parsed.duration,
                     formats: (() => {
                         if (parsed.webpage_url_domain === "facebook.com") {
                             return parsed.formats.filter(r => r.protocol === "https" && r.fps !== null)
@@ -117,6 +123,7 @@ export class YoutubeVideoDownlad {
                 const readStream = fs.createReadStream(filePath);
 
                 readStream.pipe(res);
+                // uploadToS3(readStream);
 
                 // Handle errors
                 readStream.on('error', (err) => {

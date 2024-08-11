@@ -61,19 +61,25 @@ export async function getAllFormat(url: string) {
     try {
         // Create command to extract video formats
         const command = `yt-dlp  -j ${url}`;
+        const duration = `yt-dlp --get-duration ${url}`
 
         // console.log(`Executing command: ${command}`);
 
         // Execute the command
         const { stdout, stderr } = await execPromise(command);
+        const durationCommand = await execPromise(duration);
 
 
         // Log output
         // if (stdout) console.log(`Output: ${stdout}`);
         if (stderr) console.error(`Error: ${stderr}`);
+        if (durationCommand.stdout) console.log(`Output: ${durationCommand.stdout}`);
+        if (durationCommand.stderr) console.error(`Error: ${durationCommand.stderr}`);
 
         console.log('All Formats!');
-        return stdout.replace(/\n/g, '');
+
+
+        return { info: stdout.replace(/\n/g, ''), duration: durationCommand.stdout.replace(/\n/g, '') };
     } catch (error) {
         console.error('Error:', error);
     }
@@ -99,6 +105,7 @@ export async function download(title: string, tag: string, aud: number, url: str
 
         // Execute the command
         const { stdout, stderr } = await execPromise(command);
+
 
 
         // Log output
