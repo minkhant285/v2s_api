@@ -69,7 +69,7 @@ export class YoutubeVideoDownlad {
 
         const videoUrl = req.query.url as string || '' as string;
         const tag = req.query.tag as string || '' as string;
-        if (videoUrl.includes('tiktok.com')) {
+        if (videoUrl.includes('tiktok.com' || 'pornhub.com')) {
 
             try {
                 const d = await download('g', tag, 140, videoUrl) as {
